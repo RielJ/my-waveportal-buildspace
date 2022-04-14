@@ -1,25 +1,25 @@
-import logo from './logo.svg';
 import './App.css';
 import { ReactElement } from 'react';
 
 function App(): ReactElement {
+  const wave = () => {}
   return (
-    <div>
-      <header>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-        Edit <code>src/App.tsx</code> and save to reload.
-      </p>
-        <a
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <div className="mainContainer">
+
+      <div className="dataContainer">
+        <div className="header">
+        👋 Hey there!
+        </div>
+
+        <div className="bio">
+        I am farza and I worked on self-driving cars so that's pretty cool right? Connect your Ethereum wallet and wave at me!
+        </div>
+
+        <button className="waveButton" onClick={wave}>
+          Wave at Me
+        </button>
+      </div>
+    </div>  );
 }
 
 export default App;
