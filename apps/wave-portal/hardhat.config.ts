@@ -24,6 +24,10 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 
 const config: HardhatUserConfig = {
   solidity: "0.8.4",
+  paths: {
+    artifacts: "../frontend/artifacts"
+  },
+  defaultNetwork: 'rinkeby',
   networks: {
     rinkeby: {
       url: process.env.RINKEBY_URL || "",
@@ -35,9 +39,9 @@ const config: HardhatUserConfig = {
     enabled: process.env.REPORT_GAS !== undefined,
     currency: "USD",
   },
-  etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
-  },
+  // etherscan: {
+  //   apiKey: process.env.ETHERSCAN_API_KEY,
+  // },
 };
 
 export default config;
