@@ -4,18 +4,40 @@ pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
 
+/* import "../../../node_modules/hardhat/console.sol"; */
+
 contract WavePortal {
     uint256 totalWaves;
-    address[] wavers;
 
-    constructor() {
+    event NewWave(address indexed from, uint256 timestamp, string message);
+
+    struct Wave {
+        address waver;
+        string message;
+        uint256 timestamp;
+    }
+
+    Wave[] waves;
+
+    constructor() payable {
         console.log("Yo yo, I am a contract and I am smart");
     }
 
-    function wave() public {
+    function wave(string memory _message) public {
         totalWaves += 1;
-        wavers.push(msg.sender);
         console.log("%s has waved!", msg.sender);
+
+        waves.push(Wave(msg.sender, _message, block.timestamp));
+
+        emit NewWave(msg.sender, block.timestamp, _message);
+
+        uint256 prizeAmount = 0.0001 ether;
+        require(
+            prizeAmount <= address(this).balance,
+            "Trying to withdraw more money than the contrat has."
+        );
+        (bool success, ) = (msg.sender).call{value: prizeAmount}("");
+        require(success, "Failed to withdraw more money from contract.");
     }
 
     function getTotalWaves() public view returns (uint256) {
@@ -23,10 +45,7 @@ contract WavePortal {
         return totalWaves;
     }
 
-    function getWavers() public view returns (address [] memory) {
-        for (uint256 i = 0; i < wavers.length; i++) {
-            console.log("Address have %d waved to us!", wavers[i]);
-        }
-        return wavers;
+    function getAllWaves() public view returns (Wave[] memory) {
+        return waves;
     }
 }

@@ -1,19 +1,20 @@
-import hre from 'hardhat'
+import hre from "hardhat";
 
 const main = async () => {
-  const [deployer] = await hre.ethers.getSigners()
-  const accountBalance = await deployer.getBalance()
+  const [deployer] = await hre.ethers.getSigners();
+  const accountBalance = await deployer.getBalance();
 
   console.log("Deploying Contract using account: ", deployer.address);
   console.log("Account Balance: ", accountBalance.toString());
 
   const waveContractFactory = await hre.ethers.getContractFactory("WavePortal");
-  const waveContract = await waveContractFactory.deploy();
-  await waveContract.deployed()
+  const waveContract = await waveContractFactory.deploy({
+    value: hre.ethers.utils.parseEther("0.001")
+  });
+  await waveContract.deployed();
 
-  console.log("Waveportal address: ", waveContract.address)
-
-}
+  console.log("Waveportal address: ", waveContract.address);
+};
 
 const runMain = async () => {
   try {
