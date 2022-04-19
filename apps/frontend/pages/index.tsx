@@ -215,15 +215,17 @@ const Home: NextPage = () => {
           Total Waves: <span className="italic font-bold">{totalWaves}</span>
         </div>
 
-        <Button
-          onClick={() => {
-            setPopUp(true)
-            setBackdrop(true)
-          }}
-          disabled={loading}
-        >
-          Wave at Me
-        </Button>
+        {currentAccount && (
+          <Button
+            onClick={() => {
+              setPopUp(true)
+              setBackdrop(true)
+            }}
+            disabled={!currentAccount && loading}
+          >
+            Wave at Me
+          </Button>
+        )}
 
         {!currentAccount && (
           <Button onClick={connectWallet} disabled={loading}>
