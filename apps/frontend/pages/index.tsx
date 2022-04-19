@@ -208,7 +208,7 @@ const Home: NextPage = () => {
             <b>RielJ</b>
           </em>{' '}
           and I opt to become a web3 developer, pretty ambitious? Connect your Ethereum wallet and
-          wave at me!
+          help me become one with some tips!
         </div>
 
         <div>
@@ -223,7 +223,7 @@ const Home: NextPage = () => {
             }}
             disabled={!currentAccount && loading}
           >
-            Wave at Me
+            Send Help
           </Button>
         )}
 

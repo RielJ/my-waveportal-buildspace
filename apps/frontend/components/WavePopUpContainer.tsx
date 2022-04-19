@@ -37,7 +37,7 @@ export const WavePopUpContainer = ({
     <PopupContainer sectionRef={sectionRef}>
       <form onSubmit={onSubmit}>
         <div className="flex flex-col space-y-5">
-          <div className="text-xl text-white">Glad you wanted to wave!</div>
+          <div className="text-xl text-white">Glad you wanted to help!</div>
           <textarea
             ref={inputRef}
             className="input_field"
@@ -45,7 +45,7 @@ export const WavePopUpContainer = ({
             rows={5}
           />
           <Button type="submit" loading={loading}>
-            Wave
+            Send
           </Button>
         </div>
       </form>
