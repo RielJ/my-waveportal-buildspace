@@ -43,7 +43,7 @@ export const PopupContainer: React.FC<PopupContainerProps> = ({ children, sectio
         className="__popup_container glass__gradient__thicc scrollbar scrollbar-thumb-gray scrollbar-thin"
         ref={sectionRef}
         variants={Animate}
-        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        transition={{ duration: 0.1, ease: 'easeInOut' }}
       >
         {children}
       </motion.div>

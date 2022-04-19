@@ -1,15 +1,16 @@
 import type { NextPage } from 'next'
 import { useEffect, useState } from 'react'
 import abi from '@artifacts/WavePortal.sol/WavePortal.json'
-import { BigNumber, ethers } from 'ethers'
+import { BigNumber, Contract, ethers } from 'ethers'
 import { WavePopUpContainer } from 'components/WavePopUpContainer'
 import { useCtx } from 'components/AppProvider'
 import Button from 'components/ui/Button'
+import WaveCard from 'components/WaveCard'
 
 interface IWave {
   address: string
   message: string
-  timestamp: string
+  timestamp: Date
 }
 
 const Home: NextPage = () => {
@@ -22,7 +23,7 @@ const Home: NextPage = () => {
   const [popUp, setPopUp] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const contractAddress = '0x5F136B6878491A2b6a9D8Cf42ed5e6E6477cDdAC'
+  const contractAddress = '0x133E8489497C32d7F89589F37f31ECD6005B15Ef'
   const contractABI = abi.abi
 
   const checkIfWalletIsConnected = async () => {
@@ -76,8 +77,8 @@ const Home: NextPage = () => {
 
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum)
-        const signer = provider.getSigner()
-        const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer)
+        // const signer = provider.getSigner()
+        const wavePortalContract = new ethers.Contract(contractAddress, contractABI, provider)
         const _waves = await wavePortalContract.getAllWaves()
 
         setWaves(
@@ -122,7 +123,7 @@ const Home: NextPage = () => {
         let count = await getTotalWaves()
         console.log('Retrieved total wave count...', count.toNumber())
 
-        const waveTxn = await wavePortalContract.wave(message)
+        const waveTxn = await wavePortalContract.wave(message, { gasLimit: 300000 })
         console.log('Mining...', waveTxn.hash)
 
         await waveTxn.wait()
@@ -145,10 +146,10 @@ const Home: NextPage = () => {
   const init = async () => {
     try {
       setLoading(true)
-      await Promise.all([checkIfWalletIsConnected(), getTotalWaves()])
-      if (currentAccount) {
-        await getAllWaves()
-      }
+      await Promise.all([checkIfWalletIsConnected(), getTotalWaves(), getAllWaves()])
+      // if (currentAccount) {
+      //   await getAllWaves()
+      // }
     } catch (err) {
       console.log(err)
     } finally {
@@ -163,6 +164,39 @@ const Home: NextPage = () => {
     init()
   }, [])
 
+  /**
+   * Listen in for emitter events!
+   */
+  useEffect(() => {
+    let wavePortalContract: Contract
+
+    const onNewWave = (from: string, timestamp: number, message: string) => {
+      console.log('NewWave', from, timestamp, message)
+      setWaves((prevState) => [
+        ...prevState,
+        {
+          address: from,
+          timestamp: new Date(timestamp * 1000),
+          message: message,
+        },
+      ])
+    }
+
+    if (window.ethereum) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const signer = provider.getSigner()
+
+      wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer)
+      wavePortalContract.on('NewWave', onNewWave)
+    }
+
+    return () => {
+      if (wavePortalContract) {
+        wavePortalContract.off('NewWave', onNewWave)
+      }
+    }
+  }, [])
+
   return (
     <div className="flex justify-center items-center h-[100vh]">
       <div className="flex flex-col space-y-4 text-center">
@@ -173,8 +207,8 @@ const Home: NextPage = () => {
           <em>
             <b>RielJ</b>
           </em>{' '}
-          and I worked on self-driving cars so that's pretty cool right? Connect your Ethereum
-          wallet and wave at me!
+          and I opt to become a web3 developer, pretty ambitious? Connect your Ethereum wallet and
+          wave at me!
         </div>
 
         <div>
@@ -197,18 +231,11 @@ const Home: NextPage = () => {
           </Button>
         )}
 
-        {waves.map((wave, index) => {
-          return (
-            <div
-              key={index}
-              style={{ backgroundColor: 'OldLace', marginTop: '16px', padding: '8px' }}
-            >
-              <div>Address: {wave.address}</div>
-              <div>Time: {wave.timestamp.toString()}</div>
-              <div>Message: {wave.message}</div>
-            </div>
-          )
-        })}
+        <div className="grid grid-cols-2 w-auto gap-4">
+          {waves.map((wave, index) => {
+            return <WaveCard key={wave.timestamp.getTime() + index} wave={wave} />
+          })}
+        </div>
       </div>
       {popUp && <WavePopUpContainer wave={wave} setPopUp={setPopUp} loading={loading} />}
     </div>

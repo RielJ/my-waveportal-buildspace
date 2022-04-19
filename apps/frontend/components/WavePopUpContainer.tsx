@@ -16,7 +16,12 @@ export const WavePopUpContainer = ({
 }: WavePopUpContainerProps): ReactElement => {
   const sectionRef = useRef(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
-  useOutsideClick(sectionRef, { setState: setPopUp })
+  useOutsideClick(sectionRef, {
+    setState: () => {
+      if (!loading) return setPopUp
+      return false
+    },
+  })
   const onSubmit = async (e: FormEvent) => {
     try {
       e.preventDefault()
@@ -33,7 +38,12 @@ export const WavePopUpContainer = ({
       <form onSubmit={onSubmit}>
         <div className="flex flex-col space-y-5">
           <div className="text-xl text-white">Glad you wanted to wave!</div>
-          <textarea ref={inputRef} className="input_field" placeholder="Enter your message" />
+          <textarea
+            ref={inputRef}
+            className="input_field"
+            placeholder="Enter your message"
+            rows={5}
+          />
           <Button type="submit" loading={loading}>
             Wave
           </Button>
